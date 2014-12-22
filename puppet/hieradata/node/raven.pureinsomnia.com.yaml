@@ -1,0 +1,74 @@
+---
+profiles::etherpad::etherpad_title: 'Pure Insomnia Etherpad'
+profiles::etherpad::etherpad_root: '/opt/etherpad'
+profiles::etherpad::etherpad_session_key: '123456'
+profiles::etherpad::etherpad_database_user: 'etherpad_user'
+profiles::etherpad::etherpad_database_password: 'etherpad_password'
+profiles::etherpad::etherpad_users: {}
+nodejs::target_dir: '/opt/node'
+profiles::ts3server::licensepath: /opt/static/teamspeak/
+profiles::ts3server::version: 3.0.10.3
+ts3server::params::repo_url: http://dl.4players.de/ts/releases/
+nginx::config::server_tokens: 'off'
+profiles::nginx::vhosts:
+  dynamics:
+    server_name: ['~^(www\.)?(?<domain>.+)$']
+    www_root: '/var/www/$domain/doc'
+    use_default_location: false
+    index_files: []
+  pad.pureinsomnia.com:
+    server_name: ['pad.pureinsomnia.com']
+    proxy: 'http://localhost:9001'
+  no_ip:
+    server_name: ['_']
+    www_root: '/var/www/'
+    raw_append: ["return 444;"]
+
+profiles::nginx::locations:
+  dynamics_main:
+    vhost: 'dynamics'
+    location: '/'
+    location_custom_cfg:
+      index: index.html index.htm index.php
+  dynamics_cgi:
+    vhost: 'dynamics'
+    location: '~ [^/]\.php(/|$)'
+    fastcgi: 'unix:/var/run/php5-fpm.sock'
+    location_cfg_append:
+      fastcgi_split_path_info: '^(.+\.php)(/.+)$'
+      fastcgi_index: 'index.php'
+    fastcgi_param:
+      SCRIPT_FILENAME: $document_root$fastcgi_script_name
+
+profiles::users::users:
+  theinsomniac:
+    password: 'default'
+    managehome: true
+    ensure: 'present'
+    name: 'theinsomniac'
+    require: Group[theinsomniac]
+profiles::users::groups:
+  theinsomniac:
+    name: 'theinsomniac'
+
+profiles::ssh::authorized_keys:
+  Muse:
+    ensure: present
+    key: "AAAAB3NzaC1yc2EAAAABJQAAAIEAhRqqIip5pkJBAFEqPzJJePkUn5gU5wkowyY19FLHdbDiwu4KCJEjTPyyPIRl/NRa0vaYDrV3+8OkefXwzoKSt/GckdhvtVhm23EFGebWLEhseAqMKBPG+jJd0eq/u/Dy2lPqgXvWm/L2nwp3TRAnk5pBeA7uhffpVpIX/DHzf6c="
+    user: 'theinsomniac'
+    type: 'ssh-rsa'
+
+  Emancipation:
+    ensure: present
+    key: "AAAAB3NzaC1yc2EAAAABJQAAAIB8kuyAHljH1oO9gVXqKKFcj2Etelx0S3B7LRxpH2T9wIBeqynXBeWKoGAHuKCLYoBLEpvgp/cmm3YeZsOiWxMlkovy0Jpx24wdLNdKVs9cv/ANhx6WQBrLGksOcN8S++zVx3xmmM5DEkolKlg6AFr20HeQSUfSO5yl4vFY8ggtiQ=="
+    user: 'theinsomniac'
+    type: 'ssh-rsa'
+  Redemption:
+    ensure: present
+    key: "AAAAB3NzaC1yc2EAAAABIwAAAQEAzv7RuFp1loiqkMjV6UkYVjXu6FQFHaXR8lMMksWBtIh7sNteFR47L5j3miTVuoJ4xSBx49dhrCEXpWB2bg0ZYT+bnYwkhpF2N+qJXkN8x4x4fhef0+z4jAjgKszRJBLwM259+yNk91jQKsUAiHr32gB4nH0YoYEDzgJQLQ3ttu8LGAR4pTyaayy3296JoEM5mY3MTKLsELnCccsEXzA8bmSARcQuIfrwGn3sGW4RfyW+GczmZ1d5TQzVHDiqbEWX62tzgBohS8ZVt8k7rUia66+NMLIgMMMfktRITLOJv1IMVM0yVRDMIlPYJZWOqoJjtwOtZJ1RiJZ2Vn6AdZDbBw=="
+    user: 'theinsomniac'
+    type: 'ssh-rsa'
+profiles::owncloud::ssl: true
+profiles::owncloud::servername: owncloud.pureinsomnia.com
+profiles::owncloud::webserver: nginx
+profiles::mysql::root_password: default

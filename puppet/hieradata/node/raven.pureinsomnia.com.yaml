@@ -13,7 +13,7 @@ nginx::config::server_tokens: 'off'
 profiles::nginx::vhosts:
   dynamics:
     server_name: ['~^(www\.)?(?<domain>.+)$']
-    www_root: '/var/www/$domain/doc'
+    www_root: '/var/www/hosts/$domain/docs'
     use_default_location: false
     index_files: []
   pad.pureinsomnia.com:

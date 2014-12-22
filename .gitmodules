@@ -1,0 +1,3 @@
+[submodule "pureinsomnia-puppet"]
+	path = pureinsomnia-puppet
+	url = https://github.com/ShadowZero3000/pureinsomnia-puppet.git
